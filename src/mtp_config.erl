@@ -47,7 +47,7 @@ get_downstream_safe(DcId) ->
     not_found ->
       [{_, {Min, Max}}] = ets:lookup(?TAB, id_range),
       %% Get random DC; it might return 0 and recurse aggain
-      get_downstream_safe(rand:uniform(Min, Max + 1))
+      get_downstream_safe(crypto:rand_uniform(Min, Max + 1))
   end.
 
 get_downstream(DcId) ->
@@ -58,7 +58,7 @@ get_downstream(DcId) ->
       {ok, {Ip, Port}};
     L ->
       Size = length(L),
-      Idx = rand:uniform(1, Size + 1),
+      Idx = crypto:rand_uniform(1, Size + 1),
       {_, Ip, Port} = lists:nth(Idx, L),
       {ok, {Ip, Port}}
   end.
