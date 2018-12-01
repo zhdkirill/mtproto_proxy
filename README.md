@@ -22,7 +22,7 @@ How to start - quick
 
 ```
 sudo apt install erlang-nox erlang-dev build-essential
-git clone https://github.com/seriyps/mtproto_proxy.git
+git clone https://github.com/hookzof/mtproto_proxy.git
 cd mtproto_proxy/
 cp config/vm.args.example config/prod-vm.args
 cp config/sys.config.example config/prod-sys.config
@@ -50,7 +50,7 @@ or use [kerl](https://github.com/kerl/kerl).
 ### Get the code:
 
 ```
-git clone https://github.com/seriyps/mtproto_proxy.git
+git clone https://github.com/hookzof/mtproto_proxy.git
 cd mtproto_proxy/
 ```
 
