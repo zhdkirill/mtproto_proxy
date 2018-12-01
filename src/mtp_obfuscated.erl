@@ -8,22 +8,22 @@
 -module(mtp_obfuscated).
 -behaviour(mtp_layer).
 -export([create/0,
-         create/1,
-         from_header/2,
-         new/4,
-         encrypt/2,
-         decrypt/2,
-         try_decode_packet/2,
-         encode_packet/2
-        ]).
+  create/1,
+  from_header/2,
+  new/4,
+  encrypt/2,
+  decrypt/2,
+  try_decode_packet/2,
+  encode_packet/2
+]).
 -export([bin_rev/1]).
 
 -export_type([codec/0]).
 
 -record(st,
-        {encrypt :: any(),                      % aes state
-         decrypt :: any()                       % aes state
-        }).
+{encrypt :: any(),                      % aes state
+  decrypt :: any()                       % aes state
+}).
 
 -define(APP, mtproto_proxy).
 
@@ -32,108 +32,108 @@
 %% @doc Creates new obfuscated stream (usual format)
 -spec create() -> {ok, Header :: binary(), codec()}.
 create() ->
-    create(crypto:strong_rand_bytes(60)).
+  create(crypto:strong_rand_bytes(60)).
 
 -spec create(binary()) -> {ok, Header :: binary(), codec()}.
 create(<<Left:56/binary, Right:4/binary>>) ->
-    DownHeader = <<Left/binary,
-                   16#ef, 16#ef, 16#ef, 16#ef,
-                   Right/binary>>,
-    new2(DownHeader).
+  DownHeader = <<Left/binary,
+    16#ef, 16#ef, 16#ef, 16#ef,
+    Right/binary>>,
+  new2(DownHeader).
 
 new2(<<Left:56/binary, _/binary>> = DownHeader) ->
-    {EncKey, EncIV} = init_down_encrypt(DownHeader),
-    {DecKey, DecIV} = init_down_decrypt(DownHeader),
-    St = new(EncKey, EncIV, DecKey, DecIV),
-    {<<_:56/binary, Rep:8/binary, _/binary>>, St1} = encrypt(DownHeader, St),
-    {ok,
-     <<Left/binary, Rep/binary>>,
-     St1}.
+  {EncKey, EncIV} = init_down_encrypt(DownHeader),
+  {DecKey, DecIV} = init_down_decrypt(DownHeader),
+  St = new(EncKey, EncIV, DecKey, DecIV),
+  {<<_:56/binary, Rep:8/binary, _/binary>>, St1} = encrypt(DownHeader, St),
+  {ok,
+    <<Left/binary, Rep/binary>>,
+    St1}.
 
 init_down_decrypt(<<_:8/binary, ToRev:48/binary, _/binary>>) ->
-    Reversed = bin_rev(ToRev),
-    <<KeyRev:32/binary, RevIV:16/binary>> = Reversed,
-    {KeyRev, RevIV}.
+  Reversed = bin_rev(ToRev),
+  <<KeyRev:32/binary, RevIV:16/binary>> = Reversed,
+  {KeyRev, RevIV}.
 
 init_down_encrypt(<<_:8/binary, Key:32/binary, IV:16/binary, _/binary>>) ->
-    {Key, IV}.
+  {Key, IV}.
 
 
 %% @doc creates new obfuscated stream (MTProto proxy format)
 -spec from_header(binary(), binary()) -> {ok, integer(), mtp_layer:codec(), codec()}
-                                             | {error, unknown_protocol | disabled_protocol}.
-from_header(Header, Secret) when byte_size(Header) == 64  ->
-    {EncKey, EncIV} = init_up_encrypt(Header, Secret),
-    {DecKey, DecIV} = init_up_decrypt(Header, Secret),
-    St = new(EncKey, EncIV, DecKey, DecIV),
-    {<<_:56/binary, Bin1:8/binary, _/binary>>, St1} = decrypt(Header, St),
-    case get_protocol(Bin1) of
-        {error, unknown_protocol} = Err ->
-            Err;
-        Protocol ->
-            {ok, AllowedProtocols} = application:get_env(?APP, allowed_protocols),
-            case lists:member(Protocol, AllowedProtocols) of
-                true ->
-                    DcId = get_dc(Bin1),
-                    {ok, DcId, Protocol, St1};
-                false ->
-                    {error, disabled_protocol}
-            end
-    end.
+| {error, unknown_protocol | disabled_protocol}.
+from_header(Header, Secret) when byte_size(Header) == 64 ->
+  {EncKey, EncIV} = init_up_encrypt(Header, Secret),
+  {DecKey, DecIV} = init_up_decrypt(Header, Secret),
+  St = new(EncKey, EncIV, DecKey, DecIV),
+  {<<_:56/binary, Bin1:8/binary, _/binary>>, St1} = decrypt(Header, St),
+  case get_protocol(Bin1) of
+    {error, unknown_protocol} = Err ->
+      Err;
+    Protocol ->
+      {ok, AllowedProtocols} = application:get_env(?APP, allowed_protocols),
+      case lists:member(Protocol, AllowedProtocols) of
+        true ->
+          DcId = get_dc(Bin1),
+          {ok, DcId, Protocol, St1};
+        false ->
+          {error, disabled_protocol}
+      end
+  end.
 
 init_up_encrypt(Bin, Secret) ->
-    <<_:8/binary, ToRev:48/binary, _/binary>> = Bin,
-    Rev = bin_rev(ToRev),
-    <<KeyRev:32/binary, RevIV:16/binary, _/binary>> = Rev,
-    %% <<_:32/binary, RevIV:16/binary, _/binary>> = Bin,
-    KeyRevHash = crypto:hash('sha256', <<KeyRev/binary, Secret/binary>>),
-    {KeyRevHash, RevIV}.
+  <<_:8/binary, ToRev:48/binary, _/binary>> = Bin,
+  Rev = bin_rev(ToRev),
+  <<KeyRev:32/binary, RevIV:16/binary, _/binary>> = Rev,
+  %% <<_:32/binary, RevIV:16/binary, _/binary>> = Bin,
+  KeyRevHash = crypto:hash('sha256', <<KeyRev/binary, Secret/binary>>),
+  {KeyRevHash, RevIV}.
 
 init_up_decrypt(Bin, Secret) ->
-    <<_:8/binary, Key:32/binary, IV:16/binary, _/binary>> = Bin,
-    KeyHash = crypto:hash('sha256', <<Key/binary, Secret/binary>>),
-    {KeyHash, IV}.
+  <<_:8/binary, Key:32/binary, IV:16/binary, _/binary>> = Bin,
+  KeyHash = crypto:hash('sha256', <<Key/binary, Secret/binary>>),
+  {KeyHash, IV}.
 
 get_protocol(<<16#ef, 16#ef, 16#ef, 16#ef, _/binary>>) ->
-    mtp_abridged;
+  mtp_abridged;
 get_protocol(<<16#ee, 16#ee, 16#ee, 16#ee, _/binary>>) ->
-    mtp_intermediate;
+  mtp_intermediate;
 get_protocol(<<16#dd, 16#dd, 16#dd, 16#dd, _/binary>>) ->
-    mtp_secure;
+  mtp_secure;
 get_protocol(_) ->
-    {error, unknown_protocol}.
+  {error, unknown_protocol}.
 
 get_dc(<<_:4/binary, DcId:16/signed-little-integer, _/binary>>) ->
-    DcId.
+  DcId.
 
 
 new(EncKey, EncIV, DecKey, DecIV) ->
-    #st{decrypt = crypto:stream_init('aes_ctr', DecKey, DecIV),
-        encrypt = crypto:stream_init('aes_ctr', EncKey, EncIV)}.
+  #st{decrypt = crypto:stream_init('aes_ctr', DecKey, DecIV),
+    encrypt = crypto:stream_init('aes_ctr', EncKey, EncIV)}.
 
 -spec encrypt(iodata(), codec()) -> {binary(), codec()}.
 encrypt(Data, #st{encrypt = Enc} = St) ->
-    {Enc1, Encrypted} = crypto:stream_encrypt(Enc, Data),
-    {Encrypted, St#st{encrypt = Enc1}}.
+  {Enc1, Encrypted} = crypto:stream_encrypt(Enc, Data),
+  {Encrypted, St#st{encrypt = Enc1}}.
 
 -spec decrypt(iodata(), codec()) -> {binary(), codec()}.
 decrypt(Encrypted, #st{decrypt = Dec} = St) ->
-    {Dec1, Data} = crypto:stream_encrypt(Dec, Encrypted),
-    {Data, St#st{decrypt = Dec1}}.
+  {Dec1, Data} = crypto:stream_encrypt(Dec, Encrypted),
+  {Data, St#st{decrypt = Dec1}}.
 
 %% To comply with mtp_layer interface
 -spec try_decode_packet(iodata(), codec()) -> {ok, Decoded :: binary(), codec()}
-                                                  | {incomplete, codec()}.
+| {incomplete, codec()}.
 try_decode_packet(Encrypted, St) ->
-    {Decrypted, St1} = decrypt(Encrypted, St),
-    {ok, Decrypted, St1}.
+  {Decrypted, St1} = decrypt(Encrypted, St),
+  {ok, Decrypted, St1}.
 
 -spec encode_packet(iodata(), codec()) -> {iodata(), codec()}.
 encode_packet(Msg, S) ->
-    encrypt(Msg, S).
+  encrypt(Msg, S).
 
 
 %% Helpers
 bin_rev(Bin) ->
-    %% binary:encode_unsigned(binary:decode_unsigned(Bin, little)).
-    list_to_binary(lists:reverse(binary_to_list(Bin))).
+  %% binary:encode_unsigned(binary:decode_unsigned(Bin, little)).
+  list_to_binary(lists:reverse(binary_to_list(Bin))).

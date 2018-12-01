@@ -20,7 +20,7 @@
 %%====================================================================
 
 start_link() ->
-    supervisor:start_link({local, ?SERVER}, ?MODULE, []).
+  supervisor:start_link({local, ?SERVER}, ?MODULE, []).
 
 %%====================================================================
 %% Supervisor callbacks
@@ -28,13 +28,13 @@ start_link() ->
 
 %% Child :: {Id,StartFunc,Restart,Shutdown,Type,Modules}
 init([]) ->
-    Childs = [#{id => mtp_config,
-                start => {mtp_config, start_link, []}}
-             ],
-    {ok, {#{strategy => rest_for_one,
-            intensity => 50,
-            period => 5},
-          Childs} }.
+  Childs = [#{id => mtp_config,
+    start => {mtp_config, start_link, []}}
+  ],
+  {ok, {#{strategy => rest_for_one,
+    intensity => 50,
+    period => 5},
+    Childs}}.
 
 %%====================================================================
 %% Internal functions
