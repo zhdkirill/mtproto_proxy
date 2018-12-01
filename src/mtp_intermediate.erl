@@ -24,6 +24,7 @@
 
 -opaque codec() :: #int_st{}.
 
+%%noinspection Erlang17Syntax
 new() ->
   new(#{}).
 
@@ -32,6 +33,7 @@ new(Opts) ->
 
 -spec try_decode_packet(binary(), codec()) -> {ok, binary(), codec()}
 | {incomplete, codec()}.
+%%noinspection Erlang17Syntax
 try_decode_packet(<<Len:32/unsigned-little, _/binary>> = Data,
     #int_st{buffer = <<>>} = St) ->
   Len1 = case Len < ?MAX_SIZE of

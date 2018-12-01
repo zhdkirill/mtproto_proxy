@@ -27,6 +27,7 @@ start_link() ->
 %%====================================================================
 
 %% Child :: {Id,StartFunc,Restart,Shutdown,Type,Modules}
+%%noinspection Erlang17Syntax
 init([]) ->
   Childs = [#{id => mtp_config,
     start => {mtp_config, start_link, []}}

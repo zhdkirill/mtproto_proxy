@@ -60,6 +60,7 @@ keys_str() ->
 %% Callbacks
 
 %% Custom gen_server init
+%%noinspection Erlang17Syntax
 ranch_init({Ref, Socket, Transport, _} = Opts) ->
   case init(Opts) of
     {ok, State} ->
@@ -79,6 +80,7 @@ ranch_init({Ref, Socket, Transport, _} = Opts) ->
       exit(normal)
   end.
 
+%%noinspection Erlang17Syntax
 init({_Ref, Socket, Transport, [Name, Secret, Tag]}) ->
   mtp_metric:set_context_labels([Name]),
   mtp_metric:count_inc([?APP, in_connection, total], 1, #{}),
@@ -107,6 +109,7 @@ handle_call(_Request, _From, State) ->
 handle_cast(_Msg, State) ->
   {noreply, State}.
 
+%%noinspection Erlang17Syntax
 handle_info({tcp, Sock, Data}, #state{up_sock = Sock,
   up_transport = Transport} = S) ->
   %% client -> proxy
@@ -172,6 +175,7 @@ handle_info(Other, S) ->
   lager:warning("Unexpected handle_info ~p", [Other]),
   {noreply, S}.
 
+%%noinspection Erlang17Syntax
 terminate(_Reason, #state{started_at = Started}) ->
   mtp_metric:count_inc([?APP, in_connection_closed, total], 1, #{}),
   Lifetime = erlang:system_time(millisecond) - Started,
@@ -198,6 +202,7 @@ bump_timer(#state{timer = Timer, timer_state = TState} = S) ->
       S#state{timer = Timer1}
   end.
 
+%%noinspection Erlang17Syntax
 switch_timer(#state{timer_state = TState} = S, TState) ->
   S;
 switch_timer(#state{timer_state = FromState, timer = Timer} = S, ToState) ->
@@ -220,6 +225,7 @@ state_timeout(stop) ->
 %% Stream handlers
 
 %% Handle telegram client -> proxy stream
+%%noinspection Erlang17Syntax
 handle_upstream_data(Bin, #state{stage = tunnel,
   up_codec = UpCodec} = S) ->
   {ok, S3, UpCodec1} =
@@ -267,6 +273,7 @@ handle_upstream_data(Bin, #state{stage = Stage, up_acc = Acc} = S) when Stage =/
 
 
 %% Handle telegram server -> proxy stream
+%%noinspection Erlang17Syntax
 handle_downstream_data(Bin, #state{stage = tunnel,
   down_codec = DownCodec} = S) ->
   {ok, S3, DownCodec1} =
@@ -304,6 +311,7 @@ handle_downstream_data(Bin, #state{stage = down_handshake_2,
   end.
 
 
+%%noinspection Erlang17Syntax
 up_send(Packet, #state{stage = tunnel,
   up_codec = UpCodec,
   up_sock = Sock,
@@ -324,6 +332,7 @@ up_send(Packet, #state{stage = tunnel,
     end),
   {ok, S#state{up_codec = UpCodec1}}.
 
+%%noinspection Erlang17Syntax
 down_send(Packet, #state{down_sock = Sock,
   down_codec = DownCodec} = S) ->
   {Encoded, DownCodec1} = mtp_layer:encode_packet(Packet, DownCodec),
@@ -346,6 +355,7 @@ down_send(Packet, #state{down_sock = Sock,
 %% Internal
 
 
+%%noinspection Erlang17Syntax
 handle_upstream_header(DcId, S) ->
   {Addr, Port} = mtp_config:get_downstream_safe(DcId),
 
@@ -404,6 +414,7 @@ down_handshake1(S) ->
     stage_state = {KeySelector, Nonce, CryptoTs, Key}},
   down_send(Msg, S1).
 
+%%noinspection Erlang17Syntax
 down_handshake2(<<Type:4/binary, KeySelector:4/binary, Schema:32/little, _CryptoTs:4/binary,
   SrvNonce:16/binary>>, #state{stage_state = {MyKeySelector, CliNonce, MyTs, Key},
   down_sock = Sock,
@@ -431,6 +442,7 @@ down_handshake2(<<Type:4/binary, KeySelector:4/binary, Schema:32/little, _Crypto
     stage = down_handshake_2,
     stage_state = {MyIp, MyPort, SenderPID}}).
 
+%%noinspection Erlang17Syntax
 get_middle_key(#{srv_n := Nonce, clt_n := MyNonce, clt_ts := MyTs, srv_ip := SrvIpBinBig, srv_port := SrvPort,
   clt_ip := CltIpBinBig, clt_port := CltPort, secret := Secret, purpose := Purpose} = _Args) ->
   Msg =
@@ -498,6 +510,7 @@ unhex(Chars) ->
   <<<<(UnHChar(C)):4>> || <<C>> <= Chars>>.
 
 
+%%noinspection Erlang17Syntax
 track(Direction, Data) ->
   Size = byte_size(Data),
   mtp_metric:count_inc([?APP, tracker, bytes], Size, #{labels => [Direction]}),
@@ -514,6 +527,7 @@ track(Direction, Data) ->
     176, 121, 227, 27, 239, 130, 255, 14, 232, 242, 176, 163, 39, 86, 210, 73, 197, 242, 18, 105,
     129, 108, 183, 6, 27, 38, 93, 178, 18>>).
 
+%%noinspection Erlang17Syntax
 middle_key_test() ->
   Args = #{srv_port => 80,
     srv_ip => mtp_obfuscated:bin_rev(mtp_rpc:inet_pton({149, 154, 162, 38})),

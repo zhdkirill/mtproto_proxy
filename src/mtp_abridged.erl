@@ -26,6 +26,7 @@ new() ->
 
 -spec try_decode_packet(binary(), codec()) -> {ok, binary(), codec()}
 | {incomplete, codec()}.
+%%noinspection Erlang17Syntax
 try_decode_packet(<<Flag, Len:24/unsigned-little-integer, Rest/binary>> = Data,
     #st{buffer = <<>>} = St) when Flag == 127; Flag == 255 ->
   Len1 = Len * 4,

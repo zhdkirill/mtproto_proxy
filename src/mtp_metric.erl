@@ -37,6 +37,7 @@ gauge_set(Name, Value, Extra) ->
 histogram_observe(Name, Value, Extra) ->
   notify(histogram, Name, Value, Extra).
 
+%%noinspection Erlang17Syntax
 rt(Name, Fun) ->
   Start = erlang:monotonic_time(),
   try
@@ -46,6 +47,7 @@ rt(Name, Fun) ->
   end.
 
 
+%%noinspection Erlang17Syntax
 notify(Type, Name, Value, Extra) ->
   case application:get_env(?APP, metric_backend) of
     {ok, Mod} ->
@@ -65,6 +67,7 @@ notify(Type, Name, Value, Extra) ->
   when
   Labels :: #{atom() => binary() | atom()},
   Value :: integer() | float().
+%%noinspection Erlang17Syntax
 passive_metrics() ->
   [{gauge, [?APP, connections, count],
     "Count of ranch connections",
@@ -77,6 +80,7 @@ passive_metrics() ->
   Opts :: #{duration_units => atom(),
   buckets => [number()],
   labels => [atom()]}.
+%%noinspection Erlang17Syntax
 active_metrics() ->
   [{count, [?APP, in_connection, total],
     "MTP incoming connection",

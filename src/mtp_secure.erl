@@ -16,6 +16,7 @@
 
 -opaque codec() :: mtp_intermediate:codec().
 
+%%noinspection Erlang17Syntax
 new() ->
   mtp_intermediate:new(#{padding => true}).
 

@@ -30,6 +30,7 @@ stop(_State) ->
 %%====================================================================
 %% Internal functions
 %%====================================================================
+%%noinspection Erlang17Syntax
 start_proxy(#{name := Name, port := Port, secret := Secret, tag := Tag} = P) ->
   ListenIpStr = maps:get(
     listen_ip, P,
@@ -53,5 +54,6 @@ start_proxy(#{name := Name, port := Port, secret := Secret, tag := Tag} = P) ->
     [ListenIpStr, Port, Secret, Tag, Url]),
   Res.
 
+%%noinspection Erlang17Syntax
 stop_proxy(#{name := Name}) ->
   ranch:stop_listener(Name).

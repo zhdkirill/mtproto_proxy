@@ -40,6 +40,7 @@ timeout := timeout_type()}.
 -define(MS_PER_SEC, 1000).
 
 -spec new(opts()) -> tout().
+%%noinspection Erlang17Syntax
 new(Opts) ->
   Default = #{message => timeout,
     unit => second},
@@ -105,6 +106,7 @@ get_timeout(#timeout{timeout = Sec}) ->
 -ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
 
+%%noinspection Erlang17Syntax
 new_expire_test() ->
   T = new(#{timeout => 100,
     unit => millisecond,
@@ -116,6 +118,7 @@ new_expire_test() ->
   ?assert(time_left(T) =< 0),
   ?assert(is_expired(T)).
 
+%%noinspection Erlang17Syntax
 reset_test() ->
   T = new(#{timeout => 100,
     unit => millisecond,
@@ -126,6 +129,7 @@ reset_test() ->
   ok = recv(?FUNCTION_NAME),
   ?assert(is_expired(T1)).
 
+%%noinspection Erlang17Syntax
 bump_test() ->
   T = new(#{timeout => 1000,
     unit => millisecond,
