@@ -21,16 +21,12 @@ How to start - quick
 --------------------
 
 ```
-sudo apt install erlang-nox erlang-dev build-essential
+sudo apt install erlang-nox erlang-dev build-essential -y
 git clone https://github.com/hookzof/mtproto_proxy.git
-cd mtproto_proxy/
-cp config/vm.args.example config/prod-vm.args
-cp config/sys.config.example config/prod-sys.config
+cd mtproto_proxy && cp config/vm.args.example config/prod-vm.args && cp config/sys.config.example config/prod-sys.config
 # configure your port, secret, ad_tag. See [Settings](#settings) below.
 nano config/prod-sys.config
-make && sudo make install
-sudo systemctl enable mtproto-proxy
-sudo systemctl start mtproto-proxy
+make && sudo make install && sudo systemctl enable mtproto-proxy && sudo systemctl start mtproto-proxy
 ```
 
 How to start - detailed
