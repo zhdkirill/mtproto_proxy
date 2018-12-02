@@ -21,7 +21,7 @@ How to start - quick
 --------------------
 
 ```
-sudo apt install erlang-nox erlang-dev build-essential -y
+sudo apt install erlang-nox erlang-dev build-essential git -y
 git clone https://github.com/hookzof/mtproto_proxy.git
 cd mtproto_proxy && cp config/vm.args.example config/prod-vm.args && cp config/sys.config.example config/prod-sys.config
 # configure your port, secret, ad_tag. See [Settings](#settings) below.
