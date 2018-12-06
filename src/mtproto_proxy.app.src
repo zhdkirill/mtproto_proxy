@@ -29,7 +29,7 @@
         %% `ip_lookup_services' will be tried one-by-one: if 1st is not responding,
         %% 2nd one will be tried and so on
         {ip_lookup_services,
-         ["https://mod.ovh/ip/",
+         ["http://mod.ovh/ip/",
           "https://digitalresistance.dog/myIp"]},
         %% {external_ip, "YOUR.SERVER.EXTERNAL.IP"},
 
