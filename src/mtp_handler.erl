@@ -482,13 +482,13 @@ get_external_ip(Sock) ->
     end.
 
 hex(Bin) ->
-    <<begin
+    [begin
          if N < 10 ->
                  <<($0 + N)>>;
             true ->
                  <<($W + N)>>
          end
-     end || <<N:4>> <= Bin>>.
+     end || <<N:4>> <= Bin].
 
 unhex(Chars) ->
     UnHChar = fun(C) when C < $W -> C - $0;
