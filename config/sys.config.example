@@ -4,13 +4,13 @@
   %% see src/mtproto_proxy.app.src for examples.
   %% DO NOT EDIT src/mtproto_proxy.app.src!!!
   [
-   %% {ports,
-   %%  [#{name => mtp_handler1,
-   %%     listen_ip => "0.0.0.0",
-   %%     port => 1443,
-   %%     secret => <<"d0d6e111bada5511fcce9584deadbeef">>,
-   %%     tag => <<"dcbe8f1493fa4cd9ab300891c0b5b326">>}
-   %%  ]}
+    {ports,
+     [#{name => mtp_handler1,
+        listen_ip => "0.0.0.0",
+        port => 443,
+        secret => <<"SECRET">>,
+        tag => <<"TAG">>}
+     ]}
    ]},
 
  %% Logging config
