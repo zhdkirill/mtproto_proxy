@@ -29,7 +29,7 @@ Features
 How to install - one-line interactive installer
 -----------------------------------------------
 
-This command will run [interactive script](https://gist.github.com/seriyps/dc00ad91bfd8a2058f30845cd0daed83)
+This command will run [interactive script](https://gist.github.com/zhdkirill/dc00ad91bfd8a2058f30845cd0daed83)
 that will install and configure proxy for your Ubuntu / Debian / CentOS server.
 It will ask if you want to change default port/secret/ad-tag/protocols:
 
@@ -79,7 +79,7 @@ It's ok to provide both `-a dd -a tls` to allow both protocols. If no `-a` optio
 
 ### To run with custom config-file
 
-1. Get the code `git clone https://github.com/seriyps/mtproto_proxy.git && cd mtproto_proxy/`
+1. Get the code `git clone https://github.com/zhdkirill/mtproto_proxy.git && cd mtproto_proxy/`
 2. Copy config templates `cp config/{vm.args.example,prod-vm.args}; cp config/{sys.config.example,prod-sys.config}`
 3. Edit configs. See [Settings](#settings).
 4. Build `docker build -t mtproto-proxy-erl .`
@@ -96,7 +96,7 @@ You need at least Erlang version 20! Recommended OS is Ubuntu 18.04.
 
 ```bash
 sudo apt install erlang-nox erlang-dev build-essential
-git clone https://github.com/seriyps/mtproto_proxy.git
+git clone https://github.com/zhdkirill/mtproto_proxy.git
 cd mtproto_proxy/
 cp config/vm.args.example config/prod-vm.args
 cp config/sys.config.example config/prod-sys.config
@@ -138,7 +138,7 @@ or use [kerl](https://github.com/kerl/kerl).
 ### Get the code:
 
 ```bash
-git clone https://github.com/seriyps/mtproto_proxy.git
+git clone https://github.com/zhdkirill/mtproto_proxy.git
 cd mtproto_proxy/
 ```
 
