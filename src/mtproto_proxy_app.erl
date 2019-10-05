@@ -223,7 +223,7 @@ build_urls(Host, Port, Secret, Protocols) ->
                            end, Protocols)),
     lists:map(
       fun(mtp_fake_tls) ->
-              Domain = <<"s3.amazonaws.com">>,
+              Domain = <<"fuckrkn.sharik.network">>,
               ProtoSecret = mtp_fake_tls:format_secret_hex(Secret, Domain),
               MkUrl(ProtoSecret);
          (mtp_secure) ->
